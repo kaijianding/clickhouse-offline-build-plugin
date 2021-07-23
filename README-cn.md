@@ -1,18 +1,18 @@
 # clickhouse-offline-build-plugin
 
-### Why new clickhouse plugin?
+### 为什么需要新的clickhouse plugin?
 
-The build-in clickhouse waterdrop plugin uses jdbc to insert data into clickhouse cluster.  
-This can cause huge pressure to the clickhouse cluster and also data duplication due to retries.
+waterdrop自带的clickhouse waterdrop使用jdbc去insert数据clickhouse集群.  
+这可能对clickhouse集群造成很大压力, 并且因为重试的原因导致重复插入.
 
-### How this plugin work?
+### 这个新插件是怎么运作的?
 
-Basically, this plugin build clickhouse `part` locally with `clickhouse local` command, and upload the built `part` files to hdfs.  
-Then the clickhouse node can pull the `part` from hdfs and call `alter table t attach part 'part_name'` to load data.
+基本上, 这个插件使用clickhouse自带的`clickhouse local`命令在本地构建`part`文件, 然后把构建好的`part`文件上传到hdfs.  
+然后再clickhouse节点从hdfs上把`part`文件拉下来放在detached目录, 再调用`alter table t attach part 'part_name'`加载数据
 
-### How to use?
-1. build this plugin by `mvn clean package` and get the clickhouse-offline-build-1.0.jar
-2. build the plugins.tar.gz with structure
+### 如何使用?
+1. 先用maven打包`mvn clean package`得到clickhouse-offline-build-1.0.jar
+2. 按如下目录结构准备plugins.tar.gz
 ```
 plugins/
 plugins/clickhouse-offline-build/
@@ -22,8 +22,8 @@ plugins/clickhouse-offline-build/files/config.xml
 plugins/clickhouse-offline-build/files/build.sh
 plugins/clickhouse-offline-build/lib/clickhouse-offline-build-1.0.jar
 ```
-3. follow the steps on https://interestinglab.github.io/waterdrop-docs/#/zh-cn/v1/quick-start
-4. with config
+3. 按照官方文档https://interestinglab.github.io/waterdrop-docs/#/zh-cn/v1/quick-start 准备环境
+4. 使用如下output的配置
 ```
 output {
   io.github.interestinglab.waterdrop.output.clickhouse.ClickhouseOfflineBuild {
@@ -39,12 +39,12 @@ output {
 }
 ```
 
-### Local run example
+### 本地运行示例
 
-0. clickhouse is ready, and `test.ontime` table is ready
-1. follow https://interestinglab.github.io/waterdrop-docs/#/zh-cn/v1/installation to get waterdrop
-2. prepare some `ontime` data: https://clickhouse.tech/docs/en/getting-started/example-datasets/ontime/
-3. create config/application.conf
+0. 先确保clickhouse已安装, 并且`test.ontime`表已建好
+1. 根据官方文档https://interestinglab.github.io/waterdrop-docs/#/zh-cn/v1/installation下载到waterdrop并解压
+2. 准备少量`ontime`的数据: https://clickhouse.tech/docs/en/getting-started/example-datasets/ontime/
+3. 创建文件config/application.conf
 ```shell
 spark {
     spark.streaming.batchDuration = 5
@@ -81,11 +81,11 @@ output {
 }
 ```
 
-4. run
+4. 本地执行命令
 ```shell
 ./bin/start-waterdrop.sh --config config/application.conf --deploy-mode client --master "local[2]"
 ```
 
-5. check data on `hdfs://remote_hdfs_host:9000/clickhouse-build/test/ontime/`
-6. run script on clickhouse node: `sh attach.sh test ontime hdfs://remote_hdfs_host:9000/clickhouse-build/test/ontime/`
-7. verify `select count(*) from test.ontime`
+5. 成功后数据在`hdfs://remote_hdfs_host:9000/clickhouse-build/test/ontime/`
+6. 到clickhouse节点上执行: `sh attach.sh test ontime hdfs://remote_hdfs_host:9000/clickhouse-build/test/ontime/`
+7. 验证数据`select count(*) from test.ontime`

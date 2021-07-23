@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<yandex>
+  <logger>
+    <level>information</level>
+    <log>clickhouse_data/logs/clickhouse-server.log</log>
+    <errorlog>clickhouse_data/logs/clickhouse-server.err.log</errorlog>
+    <size>1000M</size>
+    <count>10</count>
+  </logger>
+
+  <max_table_size_to_drop>0</max_table_size_to_drop>
+
+  <path>clickhouse_data/data/</path>
+
+  <tmp_path>clickhouse_data/tmp/</tmp_path>
+
+  <profiles>
+    <default>
+      <max_memory_usage>60000000000</max_memory_usage>
+    </default>
+  </profiles>
+  <users>
+    <default>
+      <password></password>
+    </default>
+  </users>
+
+  <default_profile>default</default_profile>
+
+  <default_database>default</default_database>
+
+  <clickhouse_compression>
+    <case>
+      <min_part_size>10000000000</min_part_size>
+      <min_part_size_ratio>0.01</min_part_size_ratio>
+      <method>lz4</method>
+    </case>
+  </clickhouse_compression>
+</yandex>
