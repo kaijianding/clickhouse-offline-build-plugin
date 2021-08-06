@@ -54,13 +54,13 @@ public class PartBuilder
 
   private CsvType fixSpecialType(String inType)
   {
-    if ("String".equals(inType) || "Nullable(String)".equals(inType)) {
+    if ("String".equals(inType) || "Nullable(String)".equals(inType) || "LowCardinality(String)".equals(inType)) {
       return CsvType.STRING;
     }
     if ("Decimal".equals(inType) || "Nullable(Decimal)".equals(inType)) {
       return CsvType.DECIMAL;
     }
-    if (inType.equals("Array(String)")) {
+    if (inType.equals("Array(String)") || "Array(LowCardinality(String))".equals(inType)) {
       return CsvType.ARRAY_STRING;
     }
     if (inType.startsWith("Array")) {
